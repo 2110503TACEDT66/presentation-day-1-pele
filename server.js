@@ -11,9 +11,11 @@ app.use(express.json());
 
 const hotels = require('./routes/hotels');
 const auth = require('./routes/auth');
+const bookings = require('./routes/bookings');
 
 app.use('/api/v1/hotels',hotels);
 app.use('/api/v1/auth',auth);
+app.use('/api/v1/bookings',bookings);
 app.use(cookieParser());
 
 connectDB();
