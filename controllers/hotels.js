@@ -105,10 +105,11 @@ exports.updateHotel = async (req,res,next) => {
 
 exports.deleteHotel = async (req,res,next) => {
     try {
-        const hotel = await Hotel.findByIdAndDelete(req.params.id);
+        const hotel = await Hotel.findById(req.params.id);
         if(!hotel){
-            return res.status(400).json({success :false});
+            return res.status(404).json({success :false, message:`Hotel not found with id of ${req.params.id}`});
         }
+        hotel.deleteOne();
         res.status(200).json({success : true , data : {}});
     } catch (err) { 
         res.status(400).json({success :false});

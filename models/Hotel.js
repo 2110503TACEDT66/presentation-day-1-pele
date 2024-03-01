@@ -22,6 +22,12 @@ const HotelSchema = new mongoose.Schema({
     toObject : {virtuals:true}
 });
 
+HotelSchema.pre('deleteOne',{ document: true, query: false}, async function(next){
+    console.log(`Bookings being remove from hotel ${this._id}`);
+    await this.model('Booking').deleteMany({hotel: this._id});
+    next();
+});
+
 HotelSchema.virtual('bookings',{
      ref: 'Booking',
      localField : '_id',
