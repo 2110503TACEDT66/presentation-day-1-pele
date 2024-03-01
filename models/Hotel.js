@@ -17,7 +17,16 @@ const HotelSchema = new mongoose.Schema({
         unique : true,
         require : [true , "Please add a Hotel's telephone Number"]
     }
+}, {
+    toJSON : {virtuals:true},
+    toObject : {virtuals:true}
+});
 
+HotelSchema.virtual('bookings',{
+     ref: 'Booking',
+     localField : '_id',
+     foreignField : 'hotel',
+     justOne : false
 });
 
 module.exports = mongoose.model('Hotel',HotelSchema)

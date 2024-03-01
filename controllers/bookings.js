@@ -5,15 +5,24 @@ exports.getBookings = async (req, res, next) => {
 
     // Ensure that req.user is defined before checking its role
     if (req.user && req.user.role == 'user') {
-        query = Booking.find({ user: req.user.id });
+        query = Booking.find({ user: req.user.id }).populate({
+            path:'hotel',
+            select: 'name address tel'
+        });
     } else {
         // If not a user (possibly an admin), check for hotelId
         if (req.params.hotelId) {
             console.log(req.params.hotelId);
-            query = Booking.find({ hotel: req.params.hotelId });
+            query = Booking.find({ hotel: req.params.hotelId }).populate({
+                path:'hotel',
+                select: 'name address tel'
+            });
         } else {
             // If no hotelId is specified, retrieve all bookings
-            query = Booking.find();
+            query = Booking.find().populate({
+                path:'hotel',
+                select: 'name address tel'
+            });
         }
     }
 
