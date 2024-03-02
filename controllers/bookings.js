@@ -67,34 +67,23 @@ exports.getBooking = async(req,res,next) =>{
 
 exports.addBooking = async(req,res,next) =>{
     try{
-        req.body.hotel = req.params.bookingID; //ทำไมถึงเป็นชื่อนี้ ทำไมมันใช้ bookingID ผมก็ไม่รู้
+        req.body.hotel = req.params.hotelId; //ทำไมถึงเป็นชื่อนี้ ทำไมมันใช้ hotelId ผมก็ไม่รู้
         //console.log(req.params.bookingID);
 
         //ใช้ตอนสร้าง appointment โดยเพิ่ม hospital = hospitalId
 
-        const hotel = await Hotel.findById(req.params.bookingID);
+        const hotel = await Hotel.findById(req.params.hotelId);
         
         if(!hotel){
             return res.status(404).json({
                 success:false,
-                msg:`No hotel with the id of ${req.params.bookingID}`
+                msg:`No hotel with the id of ${req.params.hotelId}`
             })
         }
 
-        //Ownership 
-        //add user id to req.body
-        req.body.user = req.user.id //กำหนดเลยว่า userid = userid นั้น
-        //Check for existed appointment 
-        const existedBooking = await Booking.find({user:req.user.id})
-        //If the user is not admin , can create only 3 apt
-        if(existedBooking.length >= 3 && req.user.role !== 'admin'){
-            return res.status(400).json({
-                success:false,
-                msg:`The user with ID ${req.user.id} has already made 3 appointments`
-            });
-        }   
-
-
+        //แก้ bookup to 3night
+        
+        
         const booking = await Booking.create(req.body);
         res.status(200).json({
             success:true , data:booking 

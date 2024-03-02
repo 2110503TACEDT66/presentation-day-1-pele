@@ -92,7 +92,10 @@ exports.createHotel = async (req,res,next) => {
 
 exports.updateHotel = async (req,res,next) => {
     try {
-        const hotel = await Hotel.findByIdAndUpdate(req.params.id);
+        const hotel = await Hotel.findByIdAndUpdate(req.params.id , req.body ,{
+            new : true ,   
+            runValidators : true //ข้อมูลที่อัพเดตถูกต้องตามโมเดลมั้ย
+        });
         if(!hotel){
             return res.status(400).json({success :false});
         }
