@@ -84,14 +84,23 @@ exports.addBooking = async(req,res,next) =>{
         //แก้ bookup to 3night
         const { user, startDate, endDate } = req.body;
         // Calculate the duration of the new booking
+        
+        console.log(startDate>endDate);
+        if(startDate>endDate){ 
+            return res.status(400).json({
+                success:false,
+                msg:`Please check startDate or endDate booking `
+            });
+
+        }
         const newBookingDuration = Math.ceil((new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24)); // in days
-        console.log(newBookingDuration);
         if(newBookingDuration >= 3  ){ //&& req.user.role !== 'admin'
             return res.status(400).json({
                 success:false,
                 msg:`The user with ID ${req.user.id} has booking more then 3 days`
             });
         }
+        
         
         const booking = await Booking.create(req.body);
         res.status(200).json({
