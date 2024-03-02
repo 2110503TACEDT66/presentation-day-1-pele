@@ -1,4 +1,5 @@
 const Booking = require('../models/Booking');
+const Hotel = require('../models/Hotel');
 
 exports.getBookings = async (req, res, next) => {
     let query;
@@ -41,3 +42,130 @@ exports.getBookings = async (req, res, next) => {
         });
     }
 };
+
+exports.getBooking = async(req,res,next) =>{
+    try{
+        const booking = await Booking.findById(req.params.id).populate({
+            path: 'hotel',
+            select : 'name address tel'
+        });
+        
+        if(!booking){
+            return res.status(404).json({success:false,
+                msg: `No booking with id of ${req.params.id}`
+            })
+        }
+
+        res.status(200).json({success:true , data:booking});
+    }
+    catch(err){
+        console.log(err.stack);
+        return res.status(500).json({success:false , msg: "Cannot find booking"})
+    }
+}
+
+
+exports.addBooking = async(req,res,next) =>{
+    try{
+        req.body.hotel = req.params.bookingID; //ทำไมถึงเป็นชื่อนี้ ทำไมมันใช้ bookingID ผมก็ไม่รู้
+        //console.log(req.params.bookingID);
+
+        //ใช้ตอนสร้าง appointment โดยเพิ่ม hospital = hospitalId
+
+        const hotel = await Hotel.findById(req.params.bookingID);
+        
+        if(!hotel){
+            return res.status(404).json({
+                success:false,
+                msg:`No hotel with the id of ${req.params.bookingID}`
+            })
+        }
+
+        //Ownership 
+        //add user id to req.body
+        req.body.user = req.user.id //กำหนดเลยว่า userid = userid นั้น
+        //Check for existed appointment 
+        const existedBooking = await Booking.find({user:req.user.id})
+        //If the user is not admin , can create only 3 apt
+        if(existedBooking.length >= 3 && req.user.role !== 'admin'){
+            return res.status(400).json({
+                success:false,
+                msg:`The user with ID ${req.user.id} has already made 3 appointments`
+            });
+        }   
+
+
+        const booking = await Booking.create(req.body);
+        res.status(200).json({
+            success:true , data:booking 
+        })
+    } catch(err){
+        console.log(err.stack);
+        return res.status(500).json({success:false , msg: "Cannot create booking"})
+    }
+}
+
+exports.updateBooking = async(req,res,next) =>{
+    try {
+        let booking = await Booking.findById(req.params.id); //หาก่อนว่าเจอไหม
+
+        if(!booking){
+            return res.status(404).json({
+                success:false,
+                msg:`No booking with the id of ${req.params.id}`
+            })
+        }
+
+        //Ownership
+        //Make sure user is the appt owner
+        if(booking.user.toString()!== req.user.id && req.user.role !== 'admin'){
+            return res.status(401).json({
+                success:false,
+                msg:`User ${req.user.id} is not authorized to update this booking`  
+            })          
+        }
+
+        booking = await Booking.findByIdAndUpdate(req.params.id,req.body,{
+            new:true ,
+            runValidators : true 
+        }) ;
+        res.status(200).json({
+            success:true , data:booking
+        })        
+    } catch(err){
+        console.log(err.stack);
+        return res.status(500).json({success:false , msg: "Cannot update Booking"})
+    }
+}
+
+exports.deleteBooking = async(req,res,next) =>{
+    try {
+        let booking = await Booking.findById(req.params.id); //หาก่อนว่าเจอไหม
+
+        if(!booking){
+            return res.status(404).json({
+                success:false,
+                msg:`No booking with the id of ${req.params.id}`
+            })
+        }
+        // Ownership
+        // Make sure user is the booking owner
+
+        if(booking.user.toString()!== req.user.id && req.user.role !== 'admin'){
+            return res.status(401).json({
+                success:false,
+                msg:`User ${req.user.id} is not authorized to delete this booking`  
+            })          
+        }
+
+        await booking.deleteOne();
+        res.status(200).json({
+            success:true , data:{}
+        })        
+    } catch(err){
+        console.log(err.stack);
+        return res.status(500).json({success:false , msg: "Cannot delete booking"})
+    }
+}
+
+
