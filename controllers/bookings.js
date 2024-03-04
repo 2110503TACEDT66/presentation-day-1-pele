@@ -87,8 +87,17 @@ exports.addBooking = async(req,res,next) =>{
         
         const { user, startDate, endDate } = req.body;
         // Calculate the duration of the new booking
-        
-        
+        const nowDate = new Date();
+        const StartDate = new Date(req.body.startDate);
+
+        if( nowDate > StartDate ){
+            return res.status(400).json({
+                success:false,
+                msg:'Please check startDate'
+            });
+        }
+
+
         if(startDate>endDate){ 
             return res.status(400).json({
                 success:false,
