@@ -1,4 +1,4 @@
-@startuml
+@startuml classDiagram
 
 class HotelBooking<<Appilcation>>
 
