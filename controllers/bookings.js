@@ -72,6 +72,9 @@ exports.addBooking = async(req,res,next) =>{
 
         //ใช้ตอนสร้าง appointment โดยเพิ่ม hospital = hospitalId
 
+        //add userId to req.body
+        req.body.user=req.user.id;
+
         const hotel = await Hotel.findById(req.params.hotelId);
         
         if(!hotel){
@@ -94,7 +97,7 @@ exports.addBooking = async(req,res,next) =>{
 
         }
         const newBookingDuration = Math.ceil((new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24)); // in days
-        if(newBookingDuration >= 3  ){ //&& req.user.role !== 'admin'
+        if(newBookingDuration >= 3 && req.user.role !== 'admin' ){ 
             return res.status(400).json({
                 success:false,
                 msg:`The user with ID ${req.user.id} has booking more then 3 days`
