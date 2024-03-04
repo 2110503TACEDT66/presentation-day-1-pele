@@ -67,8 +67,8 @@ exports.getBooking = async(req,res,next) =>{
 
 exports.addBooking = async(req,res,next) =>{
     try{
-        req.body.hotel = req.params.hotelId; //ทำไมถึงเป็นชื่อนี้ ทำไมมันใช้ hotelId ผมก็ไม่รู้
-        //console.log(req.params.bookingID);
+        req.body.hotel = req.params.hotelId; 
+        
 
         //ใช้ตอนสร้าง appointment โดยเพิ่ม hospital = hospitalId
 
@@ -81,7 +81,7 @@ exports.addBooking = async(req,res,next) =>{
             })
         }
 
-        //แก้ bookup to 3night
+        
         const { user, startDate, endDate } = req.body;
         // Calculate the duration of the new booking
         
