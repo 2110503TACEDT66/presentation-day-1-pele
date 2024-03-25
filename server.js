@@ -3,6 +3,7 @@ const dotenv = require('dotenv');
 const connectDB = require('./config/db');
 const cookieParser = require('cookie-parser');
 const mongoSanitize=require('express-mongo-sanitize');
+const cors = require('cors')
 const helmet=require('helmet');
 const {xss}=require('express-xss-sanitizer');
 const rateLimit=require('express-rate-limit');
@@ -14,6 +15,7 @@ connectDB();
 
 const app = express();
 app.use(express.json());
+app.use(cors()); 
 
 const hotels = require('./routes/hotels');
 const auth = require('./routes/auth');
