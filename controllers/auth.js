@@ -60,8 +60,7 @@ const sendTokenResponse = (user, statusCode, res) => {
     }
     res.status(statusCode).cookie('token',token,option).json({
         success : true,
-        token,
-        option : option
+        token
     })
 };
 exports.getMe = async (req,res,next) => {
