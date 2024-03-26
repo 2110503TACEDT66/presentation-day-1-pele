@@ -56,7 +56,7 @@ const sendTokenResponse = (user, statusCode, res) => {
     };
 
     if(process.env.NODE_ENV ==='production'){
-        options.secure=true;
+        option.secure=true;
     }
     res.status(statusCode).cookie('token',token,option).json({
         success : true,
